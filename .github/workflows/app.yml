@@ -110,10 +110,10 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ./app/deploy/ecs-task-definition.json
-          container-name: ${{ env.IMAGE_NAME }}
+          container-name: ci-cd-app
           image: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ needs.Build.outputs.image_tag }}
-          taskRoleArn: arn:aws:iam::406673383323:role/LabRole
-          executionRoleArn: arn:aws:iam::406673383323:role/LabRole
+          taskRoleArn: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/LabRole
+          executionRoleArn: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/LabRole
 
       - name: Register Task Definition
         id: task-definition
@@ -132,7 +132,6 @@ jobs:
             backend \"s3\" {
               bucket   = \"${{ secrets.AWS_ACCOUNT_ID }}-tfstate\"
               key      = \"app-${{ env.ENVIRONMENT }}.tfstate\"
-              region   = \"${{ vars.AWS_REGION }}\"
             }
           }" >> provider.tf
           cat provider.tf
